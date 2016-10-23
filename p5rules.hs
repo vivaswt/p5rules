@@ -1,16 +1,20 @@
-{-# LANGUAGE OverloadedStrings #-}
-import qualified Data.Text.Lazy as T
-import qualified Data.Text.Lazy.IO as T
-import qualified Persona5 as P5
+import Data.List.Split (splitOn)
 
 main = do
-  contents <- T.readFile "ペルソナ.tsv"
-  T.putStrLn $ showLines contents
+  contents <- readFile "ペルソナ.tsv"
+  let personaList = map makePersona $ lines contents
+  mapM putStrLn $ map showPersona personaList
 
-showLines :: T.Text -> T.Text
-showLines = T.unlines . map fields . T.lines
+makePersona :: String -> Persona
+makePersona lineText =
+  let fields = splitOn "\t" lineText
+  in Persona (fields !! 0) (fields !! 2)
 
-fields :: T.Text -> T.Text
-fields lineText =
-  let fields = T.splitOn "\t" lineText
-  in T.unwords [fields !! 0, fields !! 2, fields !! 5]
+data Persona = Persona {
+  name :: String,
+  arcana :: String
+} deriving (Eq, Show, Ord)
+
+showPersona :: Persona -> String
+showPersona p =
+  (name p) ++ " " ++ (arcana p)
