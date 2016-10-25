@@ -2,11 +2,15 @@ import Data.List.Split (splitOn)
 
 main = do
   contents <- readFile "ペルソナ.tsv"
-  let (personaList, exampleList) = foldr (\(persona, examples) acc -> (persona : fst acc, examples ++ snd acc)) ([],[]) $ map parse $ tail $ lines contents
+  let (personaList, exampleList) = parse contents
   print exampleList
 
-parse :: String -> (Persona, [Example])
-parse lineText =
+parse :: String -> ([Persona], [Example])
+parse contents =
+  foldr (\(persona, examples) acc -> (persona : fst acc, examples ++ snd acc)) ([],[]) $ map parseLine $ tail $ lines contents
+
+parseLine :: String -> (Persona, [Example])
+parseLine lineText =
   let fields = splitOn "\t" lineText
       name = fields !! 0
       arcana = fields !! 2
@@ -16,9 +20,10 @@ parse lineText =
 
 sourcePairs :: String -> [(String, String)]
 sourcePairs text =
-  foldr (\x acc -> toPair x : acc) [] $ splitOn ", " text
-  where toPair text = (words !! 0, words !! 1)
-          where words = splitOn "×" text
+  if null text then [] else
+    foldr (\x acc -> toPair x : acc) [] $ splitOn ", " text
+    where toPair text = (words !! 0, words !! 1)
+            where words = splitOn "×" text
 
 data Persona = Persona {
   name :: String,
