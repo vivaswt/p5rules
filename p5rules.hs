@@ -1,13 +1,18 @@
 import Data.List.Split (splitOn)
+import Control.Monad (forM)
 
 main = do
   contents <- readFile "ペルソナ.tsv"
   let (personaList, exampleList) = parse contents
-  print exampleList
+  forM personaList $ \p -> do
+    putStrLn $ showPersona p
+  forM exampleList $ \e -> do
+    putStrLn $ showExample e
 
 parse :: String -> ([Persona], [Example])
 parse contents =
-  foldr (\(persona, examples) acc -> (persona : fst acc, examples ++ snd acc)) ([],[]) $ map parseLine $ tail $ lines contents
+  foldr add ([],[]) $ map parseLine $ tail $ lines contents
+  where add (p, es) (ps, ess) = (p : ps, ess ++ es)
 
 parseLine :: String -> (Persona, [Example])
 parseLine lineText =
@@ -24,6 +29,15 @@ sourcePairs text =
     foldr (\x acc -> toPair x : acc) [] $ splitOn ", " text
     where toPair text = (words !! 0, words !! 1)
             where words = splitOn "×" text
+
+showPersona :: Persona -> String
+showPersona persona =
+  name persona ++ "[" ++ arcana persona ++ "]"
+
+showExample :: Example -> String
+showExample example =
+    source1 example ++ "x" ++ source2 example
+    ++ "->" ++ result example
 
 data Persona = Persona {
   name :: String,
