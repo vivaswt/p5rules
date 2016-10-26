@@ -1,13 +1,36 @@
 import Data.List.Split (splitOn)
+import Data.List (find)
 import Control.Monad (forM)
+import qualified Rule as R
+import qualified RuleSummary as RS
 
 main = do
   contents <- readFile "ペルソナ.tsv"
   let (personaList, exampleList) = parse contents
-  forM personaList $ \p -> do
-    putStrLn $ showPersona p
+  let ruleList = convertToRule exampleList personaList
+  let ruleSummary = RS.summarizeRules ruleList
+
+  {-
   forM exampleList $ \e -> do
     putStrLn $ showExample e
+  forM ruleList $ \r -> do
+    putStrLn $ R.showRule r
+  -}
+  forM ruleSummary $ \rs -> do
+    putStrLn $ RS.showRuleSummary rs
+
+convertToRule :: [Example] -> [Persona] -> [R.Rule]
+convertToRule exampleList personaList =
+  map (\(Example s1 s2 r) ->
+        R.Rule (arcanaOfPersona s1 personaList)
+               (arcanaOfPersona s2 personaList)
+               (arcanaOfPersona r personaList ))
+      exampleList
+
+arcanaOfPersona :: String -> [Persona] -> String
+arcanaOfPersona nameToFind personaList =
+  maybe "?" arcana result
+  where result = find (\p -> name p == nameToFind) personaList
 
 parse :: String -> ([Persona], [Example])
 parse contents =

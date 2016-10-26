@@ -1,20 +1,14 @@
-data Persona = Persona {
-  name :: String,
-  arcana :: String
-} deriving (Eq, Show, Ord)
+import Data.List (intercalate)
 
-data Example = Example {
+data RuleSummary = RuleSummary {
   source1 :: String,
   source2 :: String,
-  result :: String
-} deriving (Eq, Show, Ord)
+  results :: [String]
+}
 
-showPersona :: Persona -> IO ()
-showPersona persona = do
-  putStrLn $ name persona ++ "[" ++ arcana persona ++ "]"
+showRuleSummary rs =
+  (source1 rs) ++ "x" ++ (source2 rs) ++ "->"
+  ++ (intercalate ", " . results) rs
 
-showExample :: Example -> IO ()
-showExample example =
-  putStrLn $
-    source1 example ++ "x" ++ source2 example
-    ++ "->" ++ result example
+showTest =
+  intercalate ", " . results
