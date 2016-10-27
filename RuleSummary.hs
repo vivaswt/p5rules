@@ -1,7 +1,7 @@
 module RuleSummary (
   RuleSummary (..),
   summarizeRules,
-  showRuleSummary
+  showRuleSummary,
 ) where
 
 import qualified Rule as R
@@ -29,7 +29,8 @@ summarizeRules rules =
           case same of
             [(RuleSummary s1 s2 r)] ->
               RuleSummary s1 s2 (addResults (R.result rule) r) : others
-            [] -> summaries
+            [] -> RuleSummary (R.source1 rule) (R.source2 rule) [R.result rule]
+              : others
           where (same, others) = partition (sameSource rule) summaries
 
 showRuleSummary :: RuleSummary -> String

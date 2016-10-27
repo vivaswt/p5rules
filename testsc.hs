@@ -1,14 +1,11 @@
-import Data.List (intercalate)
+import qualified Rule as R
+import qualified RuleSummary as RS
 
-data RuleSummary = RuleSummary {
-  source1 :: String,
-  source2 :: String,
-  results :: [String]
-}
+r1 = R.Rule "a1" "a2" "a3"
+rs1 = RS.RuleSummary "a1" "a2" ["a4"]
+rules = [R.Rule "a1" "a2" "a3"]
 
-showRuleSummary rs =
-  (source1 rs) ++ "x" ++ (source2 rs) ++ "->"
-  ++ (intercalate ", " . results) rs
-
-showTest =
-  intercalate ", " . results
+main = do
+  print $ RS.sameSource r1 rs1
+  print $ RS.addResults "a" ["b", "c"]
+  print $ RS.addResults "a" ["b", "a"]

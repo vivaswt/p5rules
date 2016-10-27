@@ -13,9 +13,10 @@ main = do
   {-
   forM exampleList $ \e -> do
     putStrLn $ showExample e
+    -}
   forM ruleList $ \r -> do
     putStrLn $ R.showRule r
-  -}
+  putStrLn "***"
   forM ruleSummary $ \rs -> do
     putStrLn $ RS.showRuleSummary rs
 
