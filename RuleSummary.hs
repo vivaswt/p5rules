@@ -13,6 +13,7 @@ data RuleSummary = RuleSummary {
   results :: [String]
 }
 
+
 sameSource ::  R.Rule -> RuleSummary -> Bool
 sameSource rule summary =
   (R.source1 rule == source1 summary && R.source2 rule == source2 summary)

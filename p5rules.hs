@@ -3,6 +3,7 @@ import Data.List (find)
 import Control.Monad (forM)
 import qualified Rule as R
 import qualified RuleSummary as RS
+import qualified Arcana as AR
 
 main = do
   contents <- readFile "ペルソナ.tsv"
@@ -11,14 +12,12 @@ main = do
   let ruleSummary = RS.summarizeRules ruleList
 
   {-
-  forM exampleList $ \e -> do
-    putStrLn $ showExample e
-    -}
-  forM ruleList $ \r -> do
-    putStrLn $ R.showRule r
-  putStrLn "***"
   forM ruleSummary $ \rs -> do
     putStrLn $ RS.showRuleSummary rs
+   -}
+
+  forM AR.combinations $ \(a1, a2) -> do
+    putStrLn $ a1 ++ "," ++ a2
 
 convertToRule :: [Example] -> [Persona] -> [R.Rule]
 convertToRule exampleList personaList =
@@ -53,6 +52,18 @@ sourcePairs text =
     foldr (\x acc -> toPair x : acc) [] $ splitOn ", " text
     where toPair text = (words !! 0, words !! 1)
             where words = splitOn "×" text
+
+-- 指定されたソースの組合せを持つ例を返す
+examplesOfPairs :: (String, String) -> [Persona] -> [Example] -> [Example]
+examplesOfPairs (s1, s2) personaList exampleList =
+  let arcs (Example es1 es2 er) =
+        (arcanaOfPersona es1 personaList,
+         arcanaOfPersona es2 personaList)
+      same (a1, b1) (a2, b2) =
+        (a1 == a2 && b1 == b2) || (a1 == b2 && b1 == a2)
+      match ex = same (arcs ex) (s1, s2)
+      result = filter match exampleList
+  in result
 
 showPersona :: Persona -> String
 showPersona persona =
