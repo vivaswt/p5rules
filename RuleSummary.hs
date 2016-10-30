@@ -1,23 +1,27 @@
 module RuleSummary (
   RuleSummary (..),
   summarizeRules,
-  showRuleSummary,
+  showRuleSummary
 ) where
 
 import qualified Rule as R
+import qualified Sources as SO
 import Data.List (partition, intercalate)
 
 data RuleSummary = RuleSummary {
-  source1 :: String,
-  source2 :: String,
+  sources :: SO.Sources,
   results :: [String]
 }
 
+source1 :: RuleSummary -> String
+source1 = SO.source1 . sources
+
+source2 :: RuleSummary -> String
+source2 = SO.source2 . sources
 
 sameSource ::  R.Rule -> RuleSummary -> Bool
 sameSource rule summary =
-  (R.source1 rule == source1 summary && R.source2 rule == source2 summary)
-  || (R.source1 rule == source2 summary && R.source2 rule == source1 summary)
+  SO.equals (R.sources rule) (sources summary)
 
 addResults :: String -> [String] -> [String]
 addResults result results =
@@ -28,9 +32,9 @@ summarizeRules rules =
   foldl summarize [] rules
   where summarize summaries rule =
           case same of
-            [(RuleSummary s1 s2 r)] ->
-              RuleSummary s1 s2 (addResults (R.result rule) r) : others
-            [] -> RuleSummary (R.source1 rule) (R.source2 rule) [R.result rule]
+            [(RuleSummary s r)] ->
+              RuleSummary s (addResults (R.result rule) r) : others
+            [] -> RuleSummary (R.sources rule) [R.result rule]
               : others
           where (same, others) = partition (sameSource rule) summaries
 
