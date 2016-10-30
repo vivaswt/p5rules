@@ -3,7 +3,6 @@ import Data.List (find)
 import Control.Monad (forM)
 import qualified Rule as R
 import qualified RuleSummary as RS
-import qualified Arcana as AR
 import qualified Sources as SO
 
 main = do
@@ -35,7 +34,7 @@ arcanaOfPersona nameToFind personaList =
 
 parse :: String -> ([Persona], [Example])
 parse contents =
-  foldr add ([],[]) $ map parseLine $ tail $ lines contents
+  foldr add ([],[]) $ map parseLine . tail . lines $ contents
   where add (p, es) (ps, ess) = (p : ps, ess ++ es)
 
 parseLine :: String -> (Persona, [Example])
